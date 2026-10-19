@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { useSceneSvg, REQUIRED_LAYER_IDS, extractLayerIds } from '../art/loader';
 import { usePujoStore } from '../store/pujo';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useEyesAnimation, type EyeState } from '../hooks/useEyesAnimation';
+import { useStringLights } from '../hooks/useStringLights';
+import { StringLights } from './StringLights';
 
 const LAYER_Z_INDEX: Record<string, number> = {
   sky: 0,
@@ -20,6 +22,9 @@ const LAYER_Z_INDEX: Record<string, number> = {
 };
 
 const BLEED_LAYERS = ['sky', 'foreground'] as const;
+
+const SVG_WIDTH = 1200;
+const SVG_HEIGHT = 1000;
 
 function getEyeStateOpacity(state: EyeState, baseOpacity: number): number {
   switch (state) {
@@ -41,11 +46,14 @@ export function Stage() {
   const reducedMotion = useReducedMotion();
   const svgRef = useRef<SVGSVGElement>(null);
   const { eyeState } = useEyesAnimation();
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   const layers = useMemo(() => {
     if (!svg) return new Map<string, Element>();
     return extractLayerIds(svg, REQUIRED_LAYER_IDS);
   }, [svg]);
+
+  const bulbs = useStringLights(scene.id, containerSize.width, containerSize.height);
 
   useEffect(() => {
     if (reducedMotion || !svgRef.current) return;
@@ -90,6 +98,20 @@ export function Stage() {
     };
   }, [reducedMotion, scene.id, eyeState]);
 
+  useEffect(() => {
+    const camera = document.querySelector('[data-testid="stage"]');
+    if (!camera) return;
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        setContainerSize({ width, height });
+      }
+    });
+    ro.observe(camera);
+    return () => ro.disconnect();
+  }, []);
+
   if (!svg) {
     return (
       <div className="stage-camera" data-testid="stage" data-scene={scene.id}>
@@ -106,12 +128,16 @@ export function Stage() {
     (a, b) => (LAYER_Z_INDEX[a[0]] ?? 99) - (LAYER_Z_INDEX[b[0]] ?? 99)
   );
 
+  const viewBox = svg.viewBox.baseVal.width > 0
+    ? `${svg.viewBox.baseVal.x} ${svg.viewBox.baseVal.y} ${svg.viewBox.baseVal.width} ${svg.viewBox.baseVal.height}`
+    : `0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`;
+
   return (
     <div className="stage-camera" data-testid="stage" data-scene={scene.id} data-reduced-motion={reducedMotion}>
       <svg
         ref={svgRef}
         className="stage-svg"
-        viewBox={svg.viewBox.baseVal.width > 0 ? `${svg.viewBox.baseVal.x} ${svg.viewBox.baseVal.y} ${svg.viewBox.baseVal.width} ${svg.viewBox.baseVal.height}` : '0 0 1200 1000'}
+        viewBox={viewBox}
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
       >
@@ -134,6 +160,13 @@ export function Stage() {
           );
         })}
       </svg>
+      <StringLights
+        bulbs={bulbs}
+        svgWidth={SVG_WIDTH}
+        svgHeight={SVG_HEIGHT}
+        containerWidth={containerSize.width || SVG_WIDTH}
+        containerHeight={containerSize.height || SVG_HEIGHT}
+      />
     </div>
   );
 }
