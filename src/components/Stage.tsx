@@ -6,6 +6,7 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useEyesAnimation, type EyeState } from '../hooks/useEyesAnimation';
 import { useStringLights } from '../hooks/useStringLights';
 import { useIncenseSmoke } from '../hooks/useIncenseSmoke';
+import { useParallax, type ParallaxOffset } from '../hooks/useParallax';
 import { StringLights } from './StringLights';
 import { IncenseSmoke } from './IncenseSmoke';
 
@@ -25,6 +26,16 @@ const LAYER_Z_INDEX: Record<string, number> = {
 
 const BLEED_LAYERS = ['sky', 'foreground'] as const;
 
+const PARALLAX_DEPTH: Record<string, 'far' | 'mid' | 'near'> = {
+  sky: 'far',
+  structure: 'mid',
+  chalchitra: 'mid',
+  protima: 'near',
+  lights: 'near',
+  'lamp-pradip': 'near',
+  foreground: 'near',
+};
+
 const SVG_WIDTH = 1200;
 const SVG_HEIGHT = 1000;
 
@@ -42,6 +53,14 @@ function getEyeStateOpacity(state: EyeState, baseOpacity: number): number {
   }
 }
 
+function getParallaxStyle(offset: ParallaxOffset, reducedMotion: boolean): React.CSSProperties {
+  if (reducedMotion) return {};
+  return {
+    transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
+    willChange: 'transform',
+  };
+}
+
 export function Stage() {
   const scene = usePujoStore((s) => s.getActiveScene());
   const svg = useSceneSvg(scene.id);
@@ -49,6 +68,7 @@ export function Stage() {
   const svgRef = useRef<SVGSVGElement>(null);
   const { eyeState } = useEyesAnimation();
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const { offsets } = useParallax();
 
   const layers = useMemo(() => {
     if (!svg) return new Map<string, Element>();
@@ -150,10 +170,12 @@ export function Stage() {
         {sortedLayers.map(([layerId, element]) => {
           const bleeds = BLEED_LAYERS.includes(layerId as 'sky' | 'foreground');
           const zIndex = LAYER_Z_INDEX[layerId] ?? 0;
+          const depth = PARALLAX_DEPTH[layerId] ?? 'near';
+          const parallaxOffset = offsets[depth] ?? { x: 0, y: 0 };
           const Component = reducedMotion ? 'g' : motion.g;
           const props = reducedMotion
             ? { key: layerId }
-            : { key: layerId, style: { zIndex } as any };
+            : { key: layerId, style: { zIndex, ...getParallaxStyle(parallaxOffset, reducedMotion) } as any };
 
           return (
             <Component
