@@ -29,10 +29,12 @@ test.describe('Phase 1 shell', () => {
     await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
     await expect(page.getByTestId('entry-gate')).toBeHidden();
 
-    await page.getByRole('button', { name: 'sound' }).click();
+    await expect(page.getByTestId('mixer-controls')).toBeHidden();
+    await page.getByRole('button', { name: 'mixer' }).click();
     const slider = page.getByTestId('mixer-dhaak');
     await slider.fill('0.25');
     await expect(slider).toHaveValue('0.25');
+    await expect(slider).toHaveClass(/mixer-range/);
   });
 
   test('mute persists across a reload', async ({ page }) => {

@@ -52,7 +52,7 @@ export function Mixer() {
             <label key={bus} className="mb-3 block last:mb-0">
               <span className="mb-1 block font-body text-xs">{MIXER[bus].text}</span>
               <input
-                className="block w-full accent-alta"
+                className="mixer-range block w-full"
                 type="range"
                 min="0"
                 max="1"

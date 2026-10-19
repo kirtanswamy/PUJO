@@ -23,7 +23,7 @@ export const SLATE = {
 } as const;
 
 export const MIXER = {
-  open: copy('sound', 'ok'),
+  open: copy('mixer', 'ok'),
   mute: copy('mute', 'ok'),
   unmute: copy('unmute', 'ok'),
   crowd: copy('crowd', 'ok'),
