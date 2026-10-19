@@ -1,38 +1,55 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Greybox ghor scene', () => {
+test.describe('Phase 1 shell', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
   });
 
-  test('stage renders with 4:5 aspect and all layers', async ({ page }) => {
-    const stage = page.getByTestId('stage');
-    await expect(stage).toBeVisible();
-
-    const layers = stage.locator('[data-layer]');
-    await expect(layers).toHaveCount(9);
-
-    const layerNames = await layers.evaluateAll((els) =>
-      els.map((el) => el.getAttribute('data-layer')),
-    );
-    expect(layerNames).toEqual([
-      'sky', 'structure', 'protima', 'lights', 'fx',
-      'foreground', 'smoke', 'tone', 'grain',
-    ]);
+  test('gate is visible before entry', async ({ page }) => {
+    await expect(page.getByTestId('entry-gate')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' })).toBeFocused();
   });
 
-  test('caption shows scene title and clock', async ({ page }) => {
-    const caption = page.getByTestId('caption');
-    await expect(caption).toBeVisible();
-    await expect(caption).toContainText('Ghor');
-    await expect(caption).toContainText('ঘর');
+  test('entry removes gate and resumes the audio context', async ({ page }) => {
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+    await expect(page.locator('main')).toHaveAttribute('data-entered', 'true');
+    await expect(page.locator('main')).toHaveAttribute('data-audio-context', 'running');
   });
 
-  test('screenshot at current viewport', async ({ page }) => {
-    await page.waitForTimeout(500);
-    await expect(page).toHaveScreenshot('ghor-scene.png', {
-      fullPage: true,
-      maxDiffPixelRatio: 0.05,
-    });
+  test('mixer slider updates the store-backed input', async ({ page }) => {
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+
+    await page.getByRole('button', { name: 'sound' }).click();
+    const slider = page.getByTestId('mixer-dhaak');
+    await slider.fill('0.25');
+    await expect(slider).toHaveValue('0.25');
+  });
+
+  test('mute persists across a reload', async ({ page }) => {
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+
+    await page.getByTestId('mute-button').click();
+    await expect(page.getByTestId('mute-button')).toHaveAttribute('aria-pressed', 'true');
+
+    await page.reload();
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+    await expect(page.getByTestId('mute-button')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('gate screenshot', async ({ page }) => {
+    await expect(page).toHaveScreenshot('entry-gate.png', { fullPage: true, maxDiffPixelRatio: 0.05 });
+  });
+
+  test('post-gate screenshot', async ({ page }) => {
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+    await expect(page).toHaveScreenshot('post-gate.png', { fullPage: true, maxDiffPixelRatio: 0.05 });
   });
 });

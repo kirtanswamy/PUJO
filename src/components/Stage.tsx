@@ -2,9 +2,6 @@ import type { LayerDef } from '../editions/2026';
 import { LAYER_NAMES } from '../editions/2026';
 import { usePujoStore } from '../store/pujo';
 
-const STAGE_W = 400;
-const STAGE_H = 500;
-
 function layerStyle(layer: LayerDef, index: number): React.CSSProperties {
   return {
     position: 'absolute',
@@ -22,7 +19,7 @@ export function Stage() {
   return (
     <div
       className="relative mx-auto"
-      style={{ width: STAGE_W, height: STAGE_H, maxWidth: '100%', aspectRatio: '4/5' }}
+      style={{ width: 'min(400px, 100%)', aspectRatio: '4/5' }}
       data-testid="stage"
     >
       {LAYER_NAMES.map((name, i) => {

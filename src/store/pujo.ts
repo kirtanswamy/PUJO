@@ -50,8 +50,6 @@ export interface PujoState {
   setMixerLevel: (bus: BusName, v: number) => void;
 }
 
-const persisted = loadPersisted();
-
 export const usePujoStore = create<PujoState>((set, get) => ({
   entered: false,
   enter: () => set({ entered: true }),
@@ -64,8 +62,8 @@ export const usePujoStore = create<PujoState>((set, get) => ({
     return s.find((sc) => sc.id === sceneId) ?? s[0];
   },
 
-  masterVolume: persisted.masterVolume ?? 0.8,
-  muted: persisted.muted ?? false,
+  masterVolume: loadPersisted().masterVolume ?? 0.8,
+  muted: loadPersisted().muted ?? false,
   mixerLevels: { crowd: 0.6, dhaak: 0.8, bells: 0.5, music: 0.7 },
   activeRites: [],
 

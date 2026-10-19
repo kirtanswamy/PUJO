@@ -1,3 +1,4 @@
+import { ambientAudio } from './audio/runtime';
 import { Caption } from './components/Caption';
 import { EntryGate } from './components/EntryGate';
 import { Mixer } from './components/Mixer';
@@ -8,7 +9,11 @@ export default function App() {
   const entered = usePujoStore((s) => s.entered);
 
   return (
-    <main className="flex min-h-full flex-col items-center justify-center p-4">
+    <main
+      className="flex min-h-full flex-col items-center justify-center p-4"
+      data-entered={entered}
+      data-audio-context={entered ? ambientAudio.getContextState() : 'unavailable'}
+    >
       <Stage />
       <Caption />
       {entered && <Mixer />}
