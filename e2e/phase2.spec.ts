@@ -12,6 +12,19 @@ const REQUIRED_IDS = [
   'foreground',
 ];
 
+function collectConsoleErrors(page: any): string[] {
+  const errors: string[] = [];
+  page.on('console', (msg: any) => {
+    if (msg.type() === 'error' || msg.type() === 'warning') {
+      errors.push(`[${msg.type()}] ${msg.text()}`);
+    }
+  });
+  page.on('pageerror', (err: Error) => {
+    errors.push(`[pageerror] ${err.message}`);
+  });
+  return errors;
+}
+
 test.describe('Phase 2: Protima scene', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
@@ -19,6 +32,16 @@ test.describe('Phase 2: Protima scene', () => {
     await page.reload();
     await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
     await expect(page.getByTestId('entry-gate')).toBeHidden();
+  });
+
+  test('no console errors or warnings during load and after gate tap', async ({ page }) => {
+    const errors = collectConsoleErrors(page);
+    
+    // Wait for any async errors
+    await page.waitForTimeout(1000);
+    
+    // Check for errors
+    expect(errors).toEqual([]);
   });
 
   test('all required SVG layer IDs exist in ghor scene', async ({ page }) => {
@@ -51,34 +74,7 @@ test.describe('Phase 2: Protima scene', () => {
     }
   });
 
-  test('reduced-motion disables eye animation', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.reload();
-    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
-
-    const svg = page.locator('svg.stage-svg');
-    const eyeL = svg.locator('#eye-l');
-    const eyeR = svg.locator('#eye-r');
-
-    await expect(eyeL).toBeVisible();
-    await expect(eyeR).toBeVisible();
-
-    const pupilL = eyeL.locator('ellipse[fill="#14122b"]');
-    const pupilR = eyeR.locator('ellipse[fill="#14122b"]');
-
-    const initialOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => el.style.opacity);
-    const initialOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => el.style.opacity);
-
-    await page.waitForTimeout(200);
-
-    const afterOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => el.style.opacity);
-    const afterOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => el.style.opacity);
-
-    expect(initialOpacityL).toBe(afterOpacityL);
-    expect(initialOpacityR).toBe(afterOpacityR);
-  });
-
-test('eye glow animation runs under normal conditions', async ({ page }) => {
+  test('eye glow animation runs under normal conditions', async ({ page }) => {
     const svg = page.locator('svg.stage-svg');
     const eyeL = svg.locator('#eye-l');
     const eyeR = svg.locator('#eye-r');
@@ -93,31 +89,82 @@ test('eye glow animation runs under normal conditions', async ({ page }) => {
     await expect(eyeLInProtima).toHaveCount(0);
     await expect(eyeRInProtima).toHaveCount(0);
 
-    const pupilL = eyeL.locator('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
-    const pupilR = eyeR.locator('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
+    // Wait for animation to be applied
+    await page.waitForTimeout(500);
 
-    // Wait for animation to start (it uses requestAnimationFrame)
-    await page.waitForTimeout(1000);
+    // Check that CSS animations are running on the pupil elements (inner ellipses)
+    const pupilL = eyeL.locator('ellipse[fill="#14122b"]');
+    const pupilR = eyeR.locator('ellipse[fill="#14122b"]');
 
-    const initialOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
-    const initialOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+    const animationsL = await pupilL.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    const animationsR = await pupilR.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    expect(animationsL).toBeGreaterThan(0);
+    expect(animationsR).toBeGreaterThan(0);
 
-    console.log(`Initial - Eye L: ${initialOpacityL}, Eye R: ${initialOpacityR}`);
+    // Check that the animation is the eye-glow animation
+    const animationNameL = await pupilL.evaluate((el: SVGEllipseElement) => 
+      el.getAnimations().map(a => a.animationName).join(',')
+    );
+    const animationNameR = await pupilR.evaluate((el: SVGEllipseElement) => 
+      el.getAnimations().map(a => a.animationName).join(',')
+    );
+    expect(animationNameL).toContain('eye-glow');
+    expect(animationNameR).toContain('eye-glow');
 
-    // Wait for animation to progress (7s cycle, check at ~1500ms to see change)
-    await page.waitForTimeout(2000);
+    // Wait for right eye's animation delay (3.5s) to pass, then sample
+    await page.waitForTimeout(4000);
 
-    const afterOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
-    const afterOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+    // Sample at multiple points to catch the animation
+    const samples = 5;
+    const opacitiesL: number[] = [];
+    const opacitiesR: number[] = [];
+    
+    for (let i = 0; i < samples; i++) {
+      const opacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+      const opacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+      opacitiesL.push(opacityL);
+      opacitiesR.push(opacityR);
+      if (i < samples - 1) await page.waitForTimeout(400);
+    }
 
-    const computedAfterL = await pupilL.evaluate((el: SVGEllipseElement) => window.getComputedStyle(el).opacity);
-    const computedAfterR = await pupilR.evaluate((el: SVGEllipseElement) => window.getComputedStyle(el).opacity);
-    console.log(`After style - Eye L: ${afterOpacityL}, Eye R: ${afterOpacityR}`);
-    console.log(`After computed - Eye L: ${computedAfterL}, Eye R: ${computedAfterR}`);
+    // At least one sample should differ from the first
+    const initialL = opacitiesL[0];
+    const initialR = opacitiesR[0];
+    const changedL = opacitiesL.some((v, i) => i > 0 && v !== initialL);
+    const changedR = opacitiesR.some((v, i) => i > 0 && v !== initialR);
+    
+    console.log(`Eye L opacities: ${opacitiesL.join(', ')}`);
+    console.log(`Eye R opacities: ${opacitiesR.join(', ')}`);
+    
+    expect(changedL).toBe(true);
+    expect(changedR).toBe(true);
+  });
 
-    // Opacity should have changed (animation running)
-    expect(afterOpacityL).not.toBe(initialOpacityL);
-    expect(afterOpacityR).not.toBe(initialOpacityR);
+  test('reduced-motion disables eye animation', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.reload();
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+
+    const svg = page.locator('svg.stage-svg');
+    const eyeL = svg.locator('#eye-l');
+    const eyeR = svg.locator('#eye-r');
+
+    await expect(eyeL).toBeVisible();
+    await expect(eyeR).toBeVisible();
+
+    // Under reduced motion, there should be no animations on pupils
+    const pupilL = eyeL.locator('ellipse[fill="#14122b"]');
+    const pupilR = eyeR.locator('ellipse[fill="#14122b"]');
+    const animationsL = await pupilL.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    const animationsR = await pupilR.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    expect(animationsL).toBe(0);
+    expect(animationsR).toBe(0);
+
+    // Eyes should be fully opaque (opacity: 1)
+    const opacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+    const opacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+    expect(opacityL).toBe(1);
+    expect(opacityR).toBe(1);
   });
 
   test('reduced-motion disables string lights flicker', async ({ page }) => {

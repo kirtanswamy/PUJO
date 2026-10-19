@@ -10,7 +10,7 @@ export interface Bulb {
   opacity?: number;
 }
 
-export function useStringLights(sceneId: string, containerWidth: number, containerHeight: number): Bulb[] {
+export function useStringLights(sceneId: string, _containerWidth: number, _containerHeight: number): Bulb[] {
   const reducedMotion = useReducedMotion();
   const [bulbs, setBulbs] = useState<Bulb[]>([]);
   const animationRef = useRef<number | null>(null);
@@ -31,13 +31,27 @@ export function useStringLights(sceneId: string, containerWidth: number, contain
     }
   }, [deviceClass]);
 
+  // Structure top arc: spans from x=150 to x=1050 at y=300, peaks at x=600, y=180
+  // Sagging arc formula: y = 300 - 120 * sin(pi * (x - 150) / 900)
   useEffect(() => {
     const newBulbs: Bulb[] = [];
     const count = Math.min(maxBulbs, 8 + Math.floor(Math.random() * (maxBulbs - 8)));
 
+    // Structure arc: x from 150 to 1050, y from 300 (ends) to 180 (center)
+    const arcStartX = 150;
+    const arcEndX = 1050;
+    const arcWidth = arcEndX - arcStartX;
+    const arcBaseY = 300;
+    const arcPeakY = 180;
+    const arcHeight = arcBaseY - arcPeakY;
+
     for (let i = 0; i < count; i++) {
-      const x = 100 + Math.random() * (containerWidth - 200);
-      const y = 150 + Math.random() * (containerHeight * 0.6 - 150);
+      // Distribute bulbs along the arc with slight randomness
+      const t = (i + 0.5 + Math.random() * 0.5) / count;
+      const x = arcStartX + t * arcWidth;
+      // Sagging arc: y = baseY - height * sin(pi * t)
+      const y = arcBaseY - arcHeight * Math.sin(Math.PI * t) + (Math.random() - 0.5) * 10;
+      
       newBulbs.push({
         id: i,
         x,
@@ -48,7 +62,7 @@ export function useStringLights(sceneId: string, containerWidth: number, contain
     }
 
     setBulbs(newBulbs);
-  }, [sceneId, containerWidth, containerHeight, maxBulbs]);
+  }, [sceneId, maxBulbs]);
 
   useEffect(() => {
     if (reducedMotion || bulbs.length === 0) return;

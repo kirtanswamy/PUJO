@@ -33,14 +33,18 @@ export function useIncenseSmoke(
 
   const maxParticles = useMemo(() => {
     switch (deviceClass) {
-      case 'mobile': return 15;
-      case 'tablet': return 25;
-      default: return 40;
+      case 'mobile': return 12;
+      case 'tablet': return 20;
+      default: return 30;
     }
   }, [deviceClass]);
 
+  // Protima base/feet area in SVG coordinates: torso center 580, ry=140 -> bottom at 720
+  // Scale to container
+  const svgHeight = 1000;
+  const protimaFeetY = 720; // SVG y coordinate of protima base
   const spawnX = containerWidth * 0.5;
-  const spawnY = containerHeight * 0.75;
+  const spawnY = (protimaFeetY / svgHeight) * containerHeight;
 
   useEffect(() => {
     const newParticles: SmokeParticle[] = [];
@@ -82,8 +86,8 @@ export function useIncenseSmoke(
             ...p,
             x: p.x + p.speedX * deltaTime * 60,
             y: p.y + p.speedY * deltaTime * 60,
-            opacity: p.opacity * lifeRatio * 0.8,
-            radius: p.radius * (0.5 + lifeRatio * 0.5),
+            opacity: p.opacity * lifeRatio * 0.6,
+            radius: p.radius * (0.3 + lifeRatio * 0.7),
             life: newLife,
           };
         });
@@ -113,15 +117,16 @@ export function useIncenseSmoke(
 }
 
 function createParticle(spawnX: number, spawnY: number): SmokeParticle {
-  const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.6;
-  const speed = 15 + Math.random() * 25;
-  const life = 3 + Math.random() * 5;
+  // Rise upward with gentle drift
+  const angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.4;
+  const speed = 8 + Math.random() * 12; // Slower, more gentle
+  const life = 6 + Math.random() * 8; // Longer life for softer rise
 
   return {
-    x: spawnX + (Math.random() - 0.5) * 20,
-    y: spawnY + (Math.random() - 0.5) * 10,
-    radius: 8 + Math.random() * 12,
-    opacity: 0.15 + Math.random() * 0.15,
+    x: spawnX + (Math.random() - 0.5) * 60, // Wider spread at base
+    y: spawnY + (Math.random() - 0.5) * 20,
+    radius: 12 + Math.random() * 20, // Larger, softer particles
+    opacity: 0.05 + Math.random() * 0.08, // Much lower opacity
     speedX: Math.cos(angle) * speed,
     speedY: Math.sin(angle) * speed,
     life,
@@ -143,6 +148,7 @@ function drawSmoke(canvas: HTMLCanvasElement, particles: SmokeParticle[]): void 
   for (const p of particles) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    // Haldi color with very low opacity for soft incense smoke
     ctx.fillStyle = `rgba(233, 168, 47, ${p.opacity})`;
     ctx.fill();
   }

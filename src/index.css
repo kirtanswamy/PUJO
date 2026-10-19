@@ -132,3 +132,53 @@ body {
   outline: 2px solid #e9a82f;
   outline-offset: 3px;
 }
+
+/* Eye glow animation */
+@keyframes eye-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateX(-0.5px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateX(0.5px);
+  }
+}
+
+.eye-glow {
+  animation: eye-glow 7s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+.eye-glow-l {
+  animation-delay: 0s;
+}
+
+.eye-glow-r {
+  animation-delay: 3.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eye-glow {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Eye state classes for Chokkhu Daan */
+.eye-closed {
+  opacity: 0;
+}
+
+.eye-opening {
+  opacity: 0.5;
+}
+
+.eye-closing {
+  opacity: 0.5;
+}
+
+.eye-open {
+  opacity: 1;
+}

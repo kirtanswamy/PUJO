@@ -44,26 +44,26 @@ const PARALLAX_DEPTH: Record<string, 'far' | 'mid' | 'near'> = {
 const SVG_WIDTH = 1200;
 const SVG_HEIGHT = 1000;
 
-function getEyeStateOpacity(state: EyeState, baseOpacity: number): number {
-  switch (state) {
-    case 'closed':
-      return 0;
-    case 'opening':
-      return baseOpacity * 0.5;
-    case 'closing':
-      return baseOpacity * 0.5;
-    case 'open':
-    default:
-      return baseOpacity;
-  }
-}
-
 function getParallaxStyle(offset: ParallaxOffset, reducedMotion: boolean): React.CSSProperties {
   if (reducedMotion) return {};
   return {
     transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
     willChange: 'transform',
   };
+}
+
+function getEyeStateClass(state: EyeState): string {
+  switch (state) {
+    case 'closed':
+      return 'eye-closed';
+    case 'opening':
+      return 'eye-opening';
+    case 'closing':
+      return 'eye-closing';
+    case 'open':
+    default:
+      return 'eye-open';
+  }
 }
 
 function FpsOverlayInner({ bulbCount, particleCount }: { bulbCount: number; particleCount: number }) {
@@ -115,53 +115,33 @@ export function Stage() {
   const bulbs = useStringLights(scene.id, containerSize.width, containerSize.height);
   const { particles, canvasRef: smokeCanvasRef } = useIncenseSmoke(scene.id, containerSize.width, containerSize.height);
 
+  // Apply CSS animation classes to eye elements after SVG is injected
   useEffect(() => {
-    if (reducedMotion || !svgRef.current || !svg) return;
+    if (!svgRef.current || !svg) return;
 
-    // Mark that effect ran
-    svgRef.current.setAttribute('data-eye-effect-ran', 'true');
+    const eyeL = svgRef.current.querySelector('#eye-l');
+    const eyeR = svgRef.current.querySelector('#eye-r');
+    if (!eyeL || !eyeR) return;
 
-    const eyes = svgRef.current.querySelectorAll('#eye-l, #eye-r');
-    if (eyes.length === 0) return;
+    // Apply glow animation classes to the pupil elements (inner ellipses)
+    const pupilL = eyeL.querySelector('ellipse[fill="#14122b"]');
+    const pupilR = eyeR.querySelector('ellipse[fill="#14122b"]');
+    if (pupilL) pupilL.classList.add('eye-glow', 'eye-glow-l');
+    if (pupilR) pupilR.classList.add('eye-glow', 'eye-glow-r');
 
-    const animations: number[] = [];
+    // Apply eye state class for Chokkhu Daan to the eye groups
+    const stateClass = getEyeStateClass(eyeState);
+    eyeL.classList.add(stateClass);
+    eyeR.classList.add(stateClass);
 
-    eyes.forEach((eye, index) => {
-      const pupil = eye.querySelector('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
-      if (!pupil) return;
-
-      pupil.setAttribute('data-animated', 'true');
-
-      const delay = index * 3500;
-      const duration = 7000;
-      let startTime: number;
-
-      function animate(timestamp: number) {
-        if (!startTime) startTime = timestamp;
-        const elapsed = (timestamp - startTime + delay) % duration;
-        const progress = elapsed / duration;
-        const eased = progress < 0.5
-          ? 2 * progress * progress
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-
-        const baseOpacity = 0.3 + 0.5 * eased;
-        const opacity = getEyeStateOpacity(eyeState, baseOpacity);
-        const drift = Math.sin(progress * Math.PI * 2) * 0.5;
-
-        (pupil as SVGEllipseElement).style.opacity = opacity.toString();
-        (pupil as SVGEllipseElement).style.transform = `translateX(${drift}px)`;
-        (pupil as SVGEllipseElement).style.transformOrigin = 'center center';
-
-        animations.push(requestAnimationFrame(animate));
-      }
-
-      animations.push(requestAnimationFrame(animate));
-    });
-
+    // Cleanup
     return () => {
-      animations.forEach((id) => cancelAnimationFrame(id));
+      if (pupilL) pupilL.classList.remove('eye-glow', 'eye-glow-l');
+      if (pupilR) pupilR.classList.remove('eye-glow', 'eye-glow-r');
+      eyeL.classList.remove(stateClass);
+      eyeR.classList.remove(stateClass);
     };
-  }, [reducedMotion, scene.id, eyeState, svg]);
+  }, [svg, eyeState]);
 
   useEffect(() => {
     const camera = document.querySelector('[data-testid="stage"]');
@@ -215,13 +195,14 @@ export function Stage() {
           const depth = PARALLAX_DEPTH[layerId] ?? 'near';
           const parallaxOffset = offsets[depth] ?? { x: 0, y: 0 };
           const Component = reducedMotion ? 'g' : motion.g;
-          const props = reducedMotion
-            ? { key: layerId }
-            : { key: layerId, style: { zIndex, ...getParallaxStyle(parallaxOffset, reducedMotion) } as any };
+          const layerProps = reducedMotion
+            ? {}
+            : { style: { zIndex, ...getParallaxStyle(parallaxOffset, reducedMotion) } as any };
 
           return (
             <Component
-              {...props}
+              key={layerId}
+              {...layerProps}
               id={layerId}
               data-layer={layerId}
               className={`stage-svg-layer ${bleeds ? 'stage-svg-layer--bleed' : 'stage-svg-layer--safe'}`}
