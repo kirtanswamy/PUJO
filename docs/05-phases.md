@@ -3,16 +3,16 @@
 Tick items as they ship. Each phase ends with its "done" test.
 
 ## Phase 0: Bible and scaffold
-- [ ] Repo scaffold (Vite, React, TS, Tailwind, Motion, Zustand, Howler)
-- [ ] Tokens and fonts
-- [ ] `src/editions/2026.ts` with Scene and TrackSource types
-- [ ] `<Stage/>` with named layers, `<Caption/>`
-- [ ] Audio adapter interface (owned / youtube / spotify)
-- [ ] Greybox Ghor scene + Playwright screenshots
+- [x] Repo scaffold (Vite, React, TS, Tailwind, Motion, Zustand, Howler)
+- [x] Tokens and fonts
+- [x] `src/editions/2026.ts` with Scene and TrackSource types
+- [x] `<Stage/>` with named layers, `<Caption/>`
+- [x] Audio adapter interface (owned / youtube / spotify)
+- [x] Greybox Ghor scene + Playwright screenshots
 **Done:** a blank scene renders with correct fonts and palette on mobile and desktop.
 
 ## Phase 1: Shell
-- [ ] Entry gate, state store, audio engine, mixer
+- [x] Entry gate, state store, audio engine, mixer
 **Done:** gate-to-sound works on iOS Safari and Android Chrome.
 
 ## Phase 2: Protima scene
