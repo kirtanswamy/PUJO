@@ -21,6 +21,27 @@ body {
   width: 100%;
 }
 
+.stage-svg {
+  height: 100%;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(80svh, 100vw);
+}
+
+.stage-svg-layer {
+  transform-origin: center center;
+}
+
+.stage-svg-layer--bleed {
+  width: 100%;
+}
+
+.stage-svg-layer--safe {
+  width: 100%;
+}
+
 .stage-layer {
   position: absolute;
 }
