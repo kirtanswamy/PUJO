@@ -34,6 +34,7 @@ export interface Scene {
   id: string;
   title: string;
   tithi: ReviewedText;
+  inWorldTime: ReviewedText;
   caption: ReviewedText;
   layers: LayerDef[];
   track?: TrackSource;
@@ -50,7 +51,8 @@ export const scenes: Scene[] = [
     id: 'ghor',
     title: 'Ghor',
     tithi: { text: 'মহালয়া', review: 'NEEDS-NATIVE-REVIEW' },
-    caption: { text: "4:12 am. radio on. everyone's awake.", review: 'ok' },
+    inWorldTime: { text: '4:12 am', review: 'ok' },
+    caption: { text: "radio on. everyone's awake.", review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-14T06:00:00+05:30',
   },
@@ -58,6 +60,7 @@ export const scenes: Scene[] = [
     id: 'shashthi',
     title: 'Shashthi',
     tithi: { text: 'ষষ্ঠী', review: 'NEEDS-NATIVE-REVIEW' },
+    inWorldTime: { text: '7:40 pm', review: 'ok' },
     caption: { text: 'bodhon. the face is uncovered.', review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-18T06:00:00+05:30',
@@ -66,6 +69,7 @@ export const scenes: Scene[] = [
     id: 'saptami',
     title: 'Saptami',
     tithi: { text: 'সপ্তমী', review: 'NEEDS-NATIVE-REVIEW' },
+    inWorldTime: { text: '5:18 am', review: 'ok' },
     caption: { text: 'kola bou. the river. dawn.', review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-19T06:00:00+05:30',
@@ -74,6 +78,7 @@ export const scenes: Scene[] = [
     id: 'ashtami',
     title: 'Ashtami',
     tithi: { text: 'অষ্টমী', review: 'NEEDS-NATIVE-REVIEW' },
+    inWorldTime: { text: '8:30 am', review: 'ok' },
     caption: { text: "pushpanjali before you've eaten anything.", review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-20T06:00:00+05:30',
@@ -82,6 +87,7 @@ export const scenes: Scene[] = [
     id: 'navami',
     title: 'Navami',
     tithi: { text: 'নবমী', review: 'NEEDS-NATIVE-REVIEW' },
+    inWorldTime: { text: '9:15 pm', review: 'ok' },
     caption: { text: "the smoke is thick. you can't find your friends.", review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-21T06:00:00+05:30',
@@ -90,6 +96,7 @@ export const scenes: Scene[] = [
     id: 'dashami',
     title: 'Dashami',
     tithi: { text: 'দশমী', review: 'NEEDS-NATIVE-REVIEW' },
+    inWorldTime: { text: '4:45 pm', review: 'ok' },
     caption: { text: 'the dhaak is slower today.', review: 'ok' },
     layers: greybox('#2a1a12'),
     pujoTime: '2026-10-22T06:00:00+05:30',

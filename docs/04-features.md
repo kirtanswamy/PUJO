@@ -37,5 +37,5 @@
 ## Social
 - [ ] Shubho Bijoya card generator (shareable image)
 - [ ] Pronam board (moderated)
-- [ ] Live-time mode (scene follows local time)
+- [ ] Live-time mode (scene follows local time; replace the edition's in-world Pujo clock with real local time)
 - [ ] Radio / ambient long-loop mode
