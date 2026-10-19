@@ -5,7 +5,9 @@ import { usePujoStore } from '../store/pujo';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useEyesAnimation, type EyeState } from '../hooks/useEyesAnimation';
 import { useStringLights } from '../hooks/useStringLights';
+import { useIncenseSmoke } from '../hooks/useIncenseSmoke';
 import { StringLights } from './StringLights';
+import { IncenseSmoke } from './IncenseSmoke';
 
 const LAYER_Z_INDEX: Record<string, number> = {
   sky: 0,
@@ -54,6 +56,7 @@ export function Stage() {
   }, [svg]);
 
   const bulbs = useStringLights(scene.id, containerSize.width, containerSize.height);
+  const { particles, canvasRef: smokeCanvasRef } = useIncenseSmoke(scene.id, containerSize.width, containerSize.height);
 
   useEffect(() => {
     if (reducedMotion || !svgRef.current) return;
@@ -132,6 +135,9 @@ export function Stage() {
     ? `${svg.viewBox.baseVal.x} ${svg.viewBox.baseVal.y} ${svg.viewBox.baseVal.width} ${svg.viewBox.baseVal.height}`
     : `0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`;
 
+  const containerWidth = containerSize.width || SVG_WIDTH;
+  const containerHeight = containerSize.height || SVG_HEIGHT;
+
   return (
     <div className="stage-camera" data-testid="stage" data-scene={scene.id} data-reduced-motion={reducedMotion}>
       <svg
@@ -160,12 +166,18 @@ export function Stage() {
           );
         })}
       </svg>
+      <IncenseSmoke
+        particles={particles}
+        canvasRef={smokeCanvasRef}
+        containerWidth={containerWidth}
+        containerHeight={containerHeight}
+      />
       <StringLights
         bulbs={bulbs}
         svgWidth={SVG_WIDTH}
         svgHeight={SVG_HEIGHT}
-        containerWidth={containerSize.width || SVG_WIDTH}
-        containerHeight={containerSize.height || SVG_HEIGHT}
+        containerWidth={containerWidth}
+        containerHeight={containerHeight}
       />
     </div>
   );
