@@ -11,3 +11,5 @@
 | 2026-10-19 | Flow: Ghor (Mahalaya) then Shashthi to Dashami, pandals reached by walking | Owner's structure |
 | 2026-10-19 | Songs via owned / youtube / spotify source adapters | Keeps the famous recordings usable without self-hosting them |
 | 2026-10-19 | Year-specific content lives in editions | Reuse for every future Pujo |
+| 2026-10-19 | String lights: max 12 mobile, 20 tablet, 30 desktop; out-of-sync flicker per bulb | 60fps on mid-range phone; subtle variation avoids mechanical look |
+| 2026-10-19 | Incense smoke: max 15 mobile, 25 tablet, 40 desktop particles; pauses when tab hidden | 60fps on mid-range phone; respects visibility API |

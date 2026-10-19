@@ -7,6 +7,7 @@ import { useEyesAnimation, type EyeState } from '../hooks/useEyesAnimation';
 import { useStringLights } from '../hooks/useStringLights';
 import { useIncenseSmoke } from '../hooks/useIncenseSmoke';
 import { useParallax, type ParallaxOffset } from '../hooks/useParallax';
+import { useDebugFlags, useFps } from '../hooks/useDebug';
 import { StringLights } from './StringLights';
 import { IncenseSmoke } from './IncenseSmoke';
 
@@ -61,6 +62,37 @@ function getParallaxStyle(offset: ParallaxOffset, reducedMotion: boolean): React
   };
 }
 
+function FpsOverlayInner({ bulbCount, particleCount }: { bulbCount: number; particleCount: number }) {
+  const fps = useFps();
+  const frameTime = fps > 0 ? (1000 / fps).toFixed(2) : '0.00';
+
+  return (
+    <div
+      className="debug-fps-overlay"
+      style={{
+        position: 'fixed',
+        bottom: '1rem',
+        right: '1rem',
+        padding: '0.5rem 0.75rem',
+        backgroundColor: 'rgba(20, 18, 43, 0.9)',
+        color: '#e9a82f',
+        fontFamily: 'monospace',
+        fontSize: '0.75rem',
+        borderRadius: '4px',
+        border: '1px solid #c9973a',
+        zIndex: 9999,
+        pointerEvents: 'none',
+        fontVariantNumeric: 'tabular-nums',
+      }}
+    >
+      <div>FPS: {fps}</div>
+      <div>Frame: {frameTime}ms</div>
+      <div>Bulbs: {bulbCount}</div>
+      <div>Particles: {particleCount}</div>
+    </div>
+  );
+}
+
 export function Stage() {
   const scene = usePujoStore((s) => s.getActiveScene());
   const svg = useSceneSvg(scene.id);
@@ -69,6 +101,7 @@ export function Stage() {
   const { eyeState } = useEyesAnimation();
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const { offsets } = useParallax();
+  const { showFps } = useDebugFlags();
 
   const layers = useMemo(() => {
     if (!svg) return new Map<string, Element>();
@@ -201,6 +234,7 @@ export function Stage() {
         containerWidth={containerWidth}
         containerHeight={containerHeight}
       />
+      {showFps && <FpsOverlayInner bulbCount={bulbs.length} particleCount={particles.length} />}
     </div>
   );
 }
