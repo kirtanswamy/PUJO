@@ -1,8 +1,8 @@
 import { Howl } from 'howler';
-import type { AudioEngine } from './engine';
+import type { TrackAdapter } from './engine';
 import type { TrackSource } from '../editions/2026';
 
-export class OwnedAdapter implements AudioEngine {
+export class OwnedAdapter implements TrackAdapter {
   private howl: Howl | null = null;
   private playing = false;
 

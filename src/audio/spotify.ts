@@ -1,8 +1,8 @@
-import type { AudioEngine } from './engine';
+import type { TrackAdapter } from './engine';
 import type { TrackSource } from '../editions/2026';
 
 // TODO: Implement Spotify Embed SDK integration
-export class SpotifyAdapter implements AudioEngine {
+export class SpotifyAdapter implements TrackAdapter {
   load(_track: TrackSource): void {}
   play(): void {}
   pause(): void {}

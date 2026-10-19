@@ -1,6 +1,6 @@
 import type { TrackSource } from '../editions/2026';
 
-export interface AudioEngine {
+export interface TrackAdapter {
   load(track: TrackSource): void;
   play(): void;
   pause(): void;
