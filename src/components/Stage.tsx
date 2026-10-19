@@ -16,13 +16,15 @@ const LAYER_Z_INDEX: Record<string, number> = {
   structure: 1,
   chalchitra: 2,
   protima: 3,
-  lights: 4,
-  'lamp-pradip': 5,
-  fx: 6,
-  smoke: 7,
-  foreground: 8,
-  tone: 9,
-  grain: 10,
+  'eye-l': 4,
+  'eye-r': 4,
+  lights: 5,
+  'lamp-pradip': 6,
+  fx: 7,
+  smoke: 8,
+  foreground: 9,
+  tone: 10,
+  grain: 11,
 };
 
 const BLEED_LAYERS = ['sky', 'foreground'] as const;
@@ -32,6 +34,8 @@ const PARALLAX_DEPTH: Record<string, 'far' | 'mid' | 'near'> = {
   structure: 'mid',
   chalchitra: 'mid',
   protima: 'near',
+  'eye-l': 'near',
+  'eye-r': 'near',
   lights: 'near',
   'lamp-pradip': 'near',
   foreground: 'near',
@@ -112,12 +116,12 @@ export function Stage() {
   const { particles, canvasRef: smokeCanvasRef } = useIncenseSmoke(scene.id, containerSize.width, containerSize.height);
 
   useEffect(() => {
-    if (reducedMotion || !svgRef.current) return;
+    if (reducedMotion || !svgRef.current || !svg) return;
 
-    const protimaLayer = svgRef.current.querySelector('#protima');
-    if (!protimaLayer) return;
+    // Mark that effect ran
+    svgRef.current.setAttribute('data-eye-effect-ran', 'true');
 
-    const eyes = protimaLayer.querySelectorAll('#eye-l, #eye-r');
+    const eyes = svgRef.current.querySelectorAll('#eye-l, #eye-r');
     if (eyes.length === 0) return;
 
     const animations: number[] = [];
@@ -125,6 +129,8 @@ export function Stage() {
     eyes.forEach((eye, index) => {
       const pupil = eye.querySelector('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
       if (!pupil) return;
+
+      pupil.setAttribute('data-animated', 'true');
 
       const delay = index * 3500;
       const duration = 7000;
@@ -155,7 +161,7 @@ export function Stage() {
     return () => {
       animations.forEach((id) => cancelAnimationFrame(id));
     };
-  }, [reducedMotion, scene.id, eyeState]);
+  }, [reducedMotion, scene.id, eyeState, svg]);
 
   useEffect(() => {
     const camera = document.querySelector('[data-testid="stage"]');

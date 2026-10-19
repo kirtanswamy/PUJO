@@ -6,6 +6,7 @@
       .palette-chalchitra { fill: #c9973a; }
       .palette-protima { fill: #2a1a12; }
       .palette-eye { fill: #c8321f; }
+      .palette-haldi { fill: #e9a82f; }
       .palette-lights { fill: #e9a82f; }
       .palette-lamp { fill: #c9973a; }
       .palette-foreground { fill: #2a1a12; }
@@ -62,18 +63,18 @@
     <ellipse class="palette-protima" cx="740" cy="580" rx="40" ry="100" transform="rotate(20 740 580)" />
     <!-- Third eye -->
     <ellipse class="palette-eye" cx="600" cy="390" rx="8" ry="10" />
+  </g>
 
-    <!-- Left eye - open for bodhon -->
-    <g id="eye-l">
-      <ellipse class="palette-eye" cx="555" cy="400" rx="18" ry="14" />
-      <ellipse fill="#14122b" cx="555" cy="400" rx="6" ry="8" />
-    </g>
+  <!-- Left eye (separate layer for animation) - almond shape in haldi -->
+  <g id="eye-l">
+    <ellipse class="palette-haldi" cx="555" cy="400" rx="18" ry="14" />
+    <ellipse fill="#14122b" cx="555" cy="400" rx="6" ry="8" />
+  </g>
 
-    <!-- Right eye - open for bodhon -->
-    <g id="eye-r">
-      <ellipse class="palette-eye" cx="645" cy="400" rx="18" ry="14" />
-      <ellipse fill="#14122b" cx="645" cy="400" rx="6" ry="8" />
-    </g>
+  <!-- Right eye (separate layer for animation) - almond shape in haldi -->
+  <g id="eye-r">
+    <ellipse class="palette-haldi" cx="645" cy="400" rx="18" ry="14" />
+    <ellipse fill="#14122b" cx="645" cy="400" rx="6" ry="8" />
   </g>
 
   <!-- String lights -->

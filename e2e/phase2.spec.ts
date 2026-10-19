@@ -78,6 +78,48 @@ test.describe('Phase 2: Protima scene', () => {
     expect(initialOpacityR).toBe(afterOpacityR);
   });
 
+test('eye glow animation runs under normal conditions', async ({ page }) => {
+    const svg = page.locator('svg.stage-svg');
+    const eyeL = svg.locator('#eye-l');
+    const eyeR = svg.locator('#eye-r');
+
+    await expect(eyeL).toBeVisible();
+    await expect(eyeR).toBeVisible();
+
+    // Verify eyes are separate sibling layers (not nested in protima)
+    const protima = svg.locator('#protima');
+    const eyeLInProtima = protima.locator('#eye-l');
+    const eyeRInProtima = protima.locator('#eye-r');
+    await expect(eyeLInProtima).toHaveCount(0);
+    await expect(eyeRInProtima).toHaveCount(0);
+
+    const pupilL = eyeL.locator('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
+    const pupilR = eyeR.locator('ellipse[fill="#14122b"], ellipse[fill="rgb(20, 18, 43)"]');
+
+    // Wait for animation to start (it uses requestAnimationFrame)
+    await page.waitForTimeout(1000);
+
+    const initialOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+    const initialOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+
+    console.log(`Initial - Eye L: ${initialOpacityL}, Eye R: ${initialOpacityR}`);
+
+    // Wait for animation to progress (7s cycle, check at ~1500ms to see change)
+    await page.waitForTimeout(2000);
+
+    const afterOpacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+    const afterOpacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(el.style.opacity) || 0);
+
+    const computedAfterL = await pupilL.evaluate((el: SVGEllipseElement) => window.getComputedStyle(el).opacity);
+    const computedAfterR = await pupilR.evaluate((el: SVGEllipseElement) => window.getComputedStyle(el).opacity);
+    console.log(`After style - Eye L: ${afterOpacityL}, Eye R: ${afterOpacityR}`);
+    console.log(`After computed - Eye L: ${computedAfterL}, Eye R: ${computedAfterR}`);
+
+    // Opacity should have changed (animation running)
+    expect(afterOpacityL).not.toBe(initialOpacityL);
+    expect(afterOpacityR).not.toBe(initialOpacityR);
+  });
+
   test('reduced-motion disables string lights flicker', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.reload();

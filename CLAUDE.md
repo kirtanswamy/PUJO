@@ -14,6 +14,7 @@ UI is made of period props (radio, thali, cassette, CRT TV), never generic contr
 - Bengali script is first-class: Anek Bangla / Noto Serif Bengali. Mark any Bengali copy not reviewed by a native speaker as `NEEDS-NATIVE-REVIEW`.
 - Reverent depiction of the deity: slow, glowing, alive. No flicker, jump-scares or distortion on the protima.
 - Max five visible controls per scene.
+- **Never remove, weaken or skip a required ID, test or check to make something pass. If a check fails, fix the cause, or stop and ask.**
 
 ## Engineering
 - Vite + React + TypeScript + Tailwind + Motion + Zustand + Howler. Ask before adding any dependency.
