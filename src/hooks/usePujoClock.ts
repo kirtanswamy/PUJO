@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CLOCK } from '../copy';
 
 export function usePujoClock(targetIso?: string): string {
   const [now, setNow] = useState(() => Date.now());
@@ -13,7 +14,7 @@ export function usePujoClock(targetIso?: string): string {
   const target = new Date(targetIso).getTime();
   const diff = target - now;
 
-  if (diff <= 0) return 'চলছে'; // "ongoing"
+  if (diff <= 0) return CLOCK.ongoing.text;
 
   const totalSec = Math.floor(diff / 1000);
   const d = Math.floor(totalSec / 86400);

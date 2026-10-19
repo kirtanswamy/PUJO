@@ -23,10 +23,18 @@ export interface LayerDef {
   opacity?: number;
 }
 
+export type ReviewStatus = 'NEEDS-NATIVE-REVIEW' | 'ok';
+
+export interface ReviewedText {
+  text: string;
+  review: ReviewStatus;
+}
+
 export interface Scene {
   id: string;
   title: string;
-  bengaliTitle?: string;
+  tithi: ReviewedText;
+  caption: ReviewedText;
   layers: LayerDef[];
   track?: TrackSource;
   /** ISO date-time string when this scene's pujo phase begins */
@@ -41,43 +49,49 @@ export const scenes: Scene[] = [
   {
     id: 'ghor',
     title: 'Ghor',
-    bengaliTitle: 'ঘর',
-    layers: greybox('#555555'),
+    tithi: { text: 'মহালয়া', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: "4:12 am. radio on. everyone's awake.", review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-14T06:00:00+05:30',
   },
   {
     id: 'shashthi',
     title: 'Shashthi',
-    bengaliTitle: 'ষষ্ঠী',
-    layers: greybox('#666666'),
+    tithi: { text: 'ষষ্ঠী', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: 'bodhon. the face is uncovered.', review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-18T06:00:00+05:30',
   },
   {
     id: 'saptami',
     title: 'Saptami',
-    bengaliTitle: 'সপ্তমী',
-    layers: greybox('#777777'),
+    tithi: { text: 'সপ্তমী', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: 'kola bou. the river. dawn.', review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-19T06:00:00+05:30',
   },
   {
     id: 'ashtami',
     title: 'Ashtami',
-    bengaliTitle: 'অষ্টমী',
-    layers: greybox('#888888'),
+    tithi: { text: 'অষ্টমী', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: "pushpanjali before you've eaten anything.", review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-20T06:00:00+05:30',
   },
   {
     id: 'navami',
     title: 'Navami',
-    bengaliTitle: 'নবমী',
-    layers: greybox('#999999'),
+    tithi: { text: 'নবমী', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: "the smoke is thick. you can't find your friends.", review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-21T06:00:00+05:30',
   },
   {
     id: 'dashami',
     title: 'Dashami',
-    bengaliTitle: 'দশমী',
-    layers: greybox('#aaaaaa'),
+    tithi: { text: 'দশমী', review: 'NEEDS-NATIVE-REVIEW' },
+    caption: { text: 'the dhaak is slower today.', review: 'ok' },
+    layers: greybox('#2a1a12'),
     pujoTime: '2026-10-22T06:00:00+05:30',
   },
 ];

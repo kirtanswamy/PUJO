@@ -5,11 +5,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        alta: '#e8d8c4',
-        haldi: '#c9a84c',
-        brass: '#b08d57',
-        indigo: '#264653',
-        paper: '#f5f0e8',
+        alta: '#c8321f',
+        haldi: '#e9a82f',
+        brass: '#c9973a',
+        indigo: '#14122b',
+        paper: '#f4e9d3',
+        ink: '#2a1a12',
       },
       fontFamily: {
         display: ['"Fraunces"', 'serif'],

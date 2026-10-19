@@ -3,7 +3,7 @@ import { LAYER_NAMES } from '../editions/2026';
 import { usePujoStore } from '../store/pujo';
 
 const STAGE_W = 400;
-const STAGE_H = 500; // 4:5 ratio
+const STAGE_H = 500;
 
 function layerStyle(layer: LayerDef, index: number): React.CSSProperties {
   return {
