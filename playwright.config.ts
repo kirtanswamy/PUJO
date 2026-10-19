@@ -26,6 +26,13 @@ export default defineConfig({
         viewport: { width: 1280, height: 960 },
       },
     },
+    {
+      name: 'desktop-16x9',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1920, height: 1080 },
+      },
+    },
   ],
   webServer: {
     command: 'npm run dev -- --port 4173',
