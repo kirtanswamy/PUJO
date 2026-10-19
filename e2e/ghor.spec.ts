@@ -10,11 +10,17 @@ test.describe('Phase 1 shell', () => {
   test('stage uses a full-viewport camera with a centered safe area', async ({ page }) => {
     const viewport = page.viewportSize()!;
     await expect(page.getByTestId('stage')).toHaveCSS('height', `${viewport.height}px`);
-    await expect(page.locator('[data-layer="sky"]')).toHaveCSS('width', `${viewport.width}px`);
-    await expect(page.locator('[data-layer="structure"]')).toHaveCSS(
-      'width',
-      `${Math.min(viewport.height * 0.8, viewport.width)}px`,
-    );
+
+    const svg = page.locator('svg.stage-svg');
+    await expect(svg).toBeVisible();
+
+    const svgBox = await svg.boundingBox();
+    const expectedWidth = Math.min(viewport.height * 0.8, viewport.width);
+    expect(svgBox?.width).toBeCloseTo(expectedWidth, 1);
+
+    const svgLeft = svgBox?.x ?? 0;
+    const expectedLeft = (viewport.width - expectedWidth) / 2;
+    expect(svgLeft).toBeCloseTo(expectedLeft, 1);
   });
 
   test('gate is visible before entry', async ({ page }) => {

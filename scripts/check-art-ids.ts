@@ -11,8 +11,6 @@ const REQUIRED_IDS = [
   'structure',
   'chalchitra',
   'protima',
-  'eye-l',
-  'eye-r',
   'lights',
   'lamp-pradip',
   'foreground',

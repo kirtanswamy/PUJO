@@ -16,7 +16,7 @@ Tick items as they ship. Each phase ends with its "done" test.
 **Done:** gate-to-sound works on iOS Safari and Android Chrome.
 
 ## Phase 2: Protima scene
-- [ ] Greybox then final art, eyes, string lights, incense smoke, parallax
+- [x] Greybox then final art, eyes, string lights, incense smoke, parallax
 **Done:** it feels alive while staying static.
 
 ## Phase 3: Core rituals

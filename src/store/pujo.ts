@@ -50,33 +50,41 @@ export interface PujoState {
   setMixerLevel: (bus: BusName, v: number) => void;
 }
 
-export const usePujoStore = create<PujoState>((set, get) => ({
-  entered: false,
-  enter: () => set({ entered: true }),
+export const usePujoStore = create<PujoState>((set, get) => {
+  const store = {
+    entered: false,
+    enter: () => set({ entered: true }),
 
-  scenes,
-  sceneId: scenes[0].id,
-  setScene: (id) => set({ sceneId: id }),
-  getActiveScene: () => {
-    const { scenes: s, sceneId } = get();
-    return s.find((sc) => sc.id === sceneId) ?? s[0];
-  },
+    scenes,
+    sceneId: scenes[0].id,
+    setScene: (id: string) => set({ sceneId: id }),
+    getActiveScene: () => {
+      const { scenes: s, sceneId } = get();
+      return s.find((sc) => sc.id === sceneId) ?? s[0];
+    },
 
-  masterVolume: loadPersisted().masterVolume ?? 0.8,
-  muted: loadPersisted().muted ?? false,
-  mixerLevels: { crowd: 0.6, dhaak: 0.8, bells: 0.5, music: 0.7 },
-  activeRites: [],
+    masterVolume: loadPersisted().masterVolume ?? 0.8,
+    muted: loadPersisted().muted ?? false,
+    mixerLevels: { crowd: 0.6, dhaak: 0.8, bells: 0.5, music: 0.7 },
+    activeRites: [],
 
-  setMasterVolume: (v) => {
-    set({ masterVolume: v });
-    savePersisted({ masterVolume: v, muted: get().muted });
-  },
-  toggleMute: () => {
-    const next = !get().muted;
-    set({ muted: next });
-    savePersisted({ masterVolume: get().masterVolume, muted: next });
-  },
-  setMixerLevel: (bus, v) =>
-    set((s) => ({ mixerLevels: { ...s.mixerLevels, [bus]: v } })),
-}));
+    setMasterVolume: (v: number) => {
+      set({ masterVolume: v });
+      savePersisted({ masterVolume: v, muted: get().muted });
+    },
+    toggleMute: () => {
+      const next = !get().muted;
+      set({ muted: next });
+      savePersisted({ masterVolume: get().masterVolume, muted: next });
+    },
+    setMixerLevel: (bus: BusName, v: number) =>
+      set((s) => ({ mixerLevels: { ...s.mixerLevels, [bus]: v } })),
+  };
+
+  if (import.meta.env.DEV && typeof window !== 'undefined') {
+    (window as any).__PUJO_STORE__ = { getState: get, setState: set };
+  }
+
+  return store;
+});
 

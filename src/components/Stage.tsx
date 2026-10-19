@@ -114,7 +114,10 @@ export function Stage() {
   useEffect(() => {
     if (reducedMotion || !svgRef.current) return;
 
-    const eyes = svgRef.current.querySelectorAll('#eye-l, #eye-r');
+    const protimaLayer = svgRef.current.querySelector('#protima');
+    if (!protimaLayer) return;
+
+    const eyes = protimaLayer.querySelectorAll('#eye-l, #eye-r');
     if (eyes.length === 0) return;
 
     const animations: number[] = [];
