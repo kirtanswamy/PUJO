@@ -4,8 +4,6 @@ import { usePujoStore } from '../store/pujo';
 
 function layerStyle(layer: LayerDef, index: number): React.CSSProperties {
   return {
-    position: 'absolute',
-    inset: 0,
     backgroundColor: layer.color,
     opacity: layer.opacity ?? 1,
     zIndex: index,
@@ -14,22 +12,21 @@ function layerStyle(layer: LayerDef, index: number): React.CSSProperties {
 
 export function Stage() {
   const scene = usePujoStore((s) => s.getActiveScene());
-  const layerMap = new Map(scene.layers.map((l) => [l.name, l]));
+  const layerMap = new Map(scene.layers.map((layer) => [layer.name, layer]));
 
   return (
-    <div
-      className="relative mx-auto"
-      style={{ width: 'min(400px, 100%)', aspectRatio: '4/5' }}
-      data-testid="stage"
-    >
-      {LAYER_NAMES.map((name, i) => {
+    <div className="stage-camera" data-testid="stage">
+      {LAYER_NAMES.map((name, index) => {
         const layer = layerMap.get(name);
         if (!layer) return null;
+        const bleedsToViewport = name === 'sky' || name === 'foreground';
+
         return (
           <div
             key={name}
+            className={`stage-layer ${bleedsToViewport ? 'stage-layer--bleed' : 'stage-layer--safe'}`}
             data-layer={name}
-            style={layerStyle(layer, i)}
+            style={layerStyle(layer, index)}
           />
         );
       })}

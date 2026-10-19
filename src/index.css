@@ -13,3 +13,39 @@ body {
   background-color: #14122b;
   font-family: 'Anek Bangla', sans-serif;
 }
+
+.stage-camera {
+  height: 100svh;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.stage-layer {
+  position: absolute;
+}
+
+.stage-layer--bleed {
+  inset: 0;
+}
+
+.stage-layer--safe {
+  height: 100svh;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(80svh, 100vw);
+}
+
+.caption-safe-area {
+  align-items: center;
+  bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  left: 50%;
+  position: fixed;
+  transform: translateX(-50%);
+  width: min(80svh, calc(100vw - 2rem));
+  z-index: 30;
+}

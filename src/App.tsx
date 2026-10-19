@@ -10,7 +10,7 @@ export default function App() {
 
   return (
     <main
-      className="flex min-h-full flex-col items-center justify-center p-4"
+      className="relative min-h-svh overflow-hidden"
       data-entered={entered}
       data-audio-context={entered ? ambientAudio.getContextState() : 'unavailable'}
     >

@@ -7,6 +7,11 @@ test.describe('Phase 1 shell', () => {
     await page.reload();
   });
 
+  test('stage uses a full-viewport camera with a centered safe area', async ({ page }) => {
+    await expect(page.getByTestId('stage')).toHaveCSS('height', `${page.viewportSize()!.height}px`);
+    await expect(page.locator('[data-layer="sky"]')).toHaveCSS('width', `${page.viewportSize()!.width}px`);
+  });
+
   test('gate is visible before entry', async ({ page }) => {
     await expect(page.getByTestId('entry-gate')).toBeVisible();
     await expect(page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' })).toBeFocused();
