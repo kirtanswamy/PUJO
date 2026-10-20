@@ -123,11 +123,9 @@ export function Stage() {
     const eyeR = svgRef.current.querySelector('#eye-r');
     if (!eyeL || !eyeR) return;
 
-    // Apply glow animation classes to the pupil elements (inner ellipses)
-    const pupilL = eyeL.querySelector('ellipse[fill="#14122b"]');
-    const pupilR = eyeR.querySelector('ellipse[fill="#14122b"]');
-    if (pupilL) pupilL.classList.add('eye-glow', 'eye-glow-l');
-    if (pupilR) pupilR.classList.add('eye-glow', 'eye-glow-r');
+    // Apply glow animation classes to the eye groups (haldi almond shapes)
+    eyeL.classList.add('eye-glow', 'eye-glow-l');
+    eyeR.classList.add('eye-glow', 'eye-glow-r');
 
     // Apply eye state class for Chokkhu Daan to the eye groups
     const stateClass = getEyeStateClass(eyeState);
@@ -136,10 +134,8 @@ export function Stage() {
 
     // Cleanup
     return () => {
-      if (pupilL) pupilL.classList.remove('eye-glow', 'eye-glow-l');
-      if (pupilR) pupilR.classList.remove('eye-glow', 'eye-glow-r');
-      eyeL.classList.remove(stateClass);
-      eyeR.classList.remove(stateClass);
+      eyeL.classList.remove('eye-glow', 'eye-glow-l', stateClass);
+      eyeR.classList.remove('eye-glow', 'eye-glow-r', stateClass);
     };
   }, [svg, eyeState]);
 

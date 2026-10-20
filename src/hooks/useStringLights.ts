@@ -31,34 +31,45 @@ export function useStringLights(sceneId: string, _containerWidth: number, _conta
     }
   }, [deviceClass]);
 
-  // Structure top arc: spans from x=150 to x=1050 at y=300, peaks at x=600, y=180
-  // Sagging arc formula: y = 300 - 120 * sin(pi * (x - 150) / 900)
+  // Catenary swags between anchor points on structure top
+  // Structure top spans from x=150 to x=1050 at y=300
+  // 4 swags: anchors at x=150, 375, 600, 825, 1050
+  // Catenary: y = y0 + a * cosh((x - x0) / a) - a, where a controls sag
+  // For gentle sag: a = 40, dip at midpoint is about 40px
+  const anchors = [150, 375, 600, 825, 1050];
+  const anchorY = 300;
+  const catenaryA = 40;
+
   useEffect(() => {
     const newBulbs: Bulb[] = [];
     const count = Math.min(maxBulbs, 8 + Math.floor(Math.random() * (maxBulbs - 8)));
 
-    // Structure arc: x from 150 to 1050, y from 300 (ends) to 180 (center)
-    const arcStartX = 150;
-    const arcEndX = 1050;
-    const arcWidth = arcEndX - arcStartX;
-    const arcBaseY = 300;
-    const arcPeakY = 180;
-    const arcHeight = arcBaseY - arcPeakY;
+    // Distribute bulbs across all swags
+    const bulbsPerSwag = Math.ceil(count / (anchors.length - 1));
+    let bulbId = 0;
 
-    for (let i = 0; i < count; i++) {
-      // Distribute bulbs along the arc with slight randomness
-      const t = (i + 0.5 + Math.random() * 0.5) / count;
-      const x = arcStartX + t * arcWidth;
-      // Sagging arc: y = baseY - height * sin(pi * t)
-      const y = arcBaseY - arcHeight * Math.sin(Math.PI * t) + (Math.random() - 0.5) * 10;
-      
-      newBulbs.push({
-        id: i,
-        x,
-        y,
-        phase: Math.random() * Math.PI * 2,
-        baseOpacity: 0.4 + Math.random() * 0.4,
-      });
+    for (let swag = 0; swag < anchors.length - 1; swag++) {
+      const x1 = anchors[swag];
+      const x2 = anchors[swag + 1];
+      const xMid = (x1 + x2) / 2;
+      const swagWidth = x2 - x1;
+
+      for (let i = 0; i < bulbsPerSwag && bulbId < count; i++) {
+        const t = (i + 0.5 + Math.random() * 0.3) / bulbsPerSwag;
+        const x = x1 + t * swagWidth;
+        
+        // Catenary curve: y = anchorY + a * cosh((x - xMid) / a) - a
+        const dx = x - xMid;
+        const y = anchorY + catenaryA * Math.cosh(dx / catenaryA) - catenaryA + (Math.random() - 0.5) * 5;
+        
+        newBulbs.push({
+          id: bulbId++,
+          x,
+          y,
+          phase: Math.random() * Math.PI * 2,
+          baseOpacity: 0.4 + Math.random() * 0.4,
+        });
+      }
     }
 
     setBulbs(newBulbs);

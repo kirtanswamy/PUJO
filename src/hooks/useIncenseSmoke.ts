@@ -126,7 +126,7 @@ function createParticle(spawnX: number, spawnY: number): SmokeParticle {
     x: spawnX + (Math.random() - 0.5) * 60, // Wider spread at base
     y: spawnY + (Math.random() - 0.5) * 20,
     radius: 12 + Math.random() * 20, // Larger, softer particles
-    opacity: 0.05 + Math.random() * 0.08, // Much lower opacity
+    opacity: 0.08 + Math.random() * 0.12, // Low opacity, paper tint
     speedX: Math.cos(angle) * speed,
     speedY: Math.sin(angle) * speed,
     life,
@@ -148,8 +148,9 @@ function drawSmoke(canvas: HTMLCanvasElement, particles: SmokeParticle[]): void 
   for (const p of particles) {
     ctx.beginPath();
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    // Haldi color with very low opacity for soft incense smoke
-    ctx.fillStyle = `rgba(233, 168, 47, ${p.opacity})`;
+    // Paper tint (#f4e9d3) - warm pale color for incense smoke
+    // RGB(244, 233, 211)
+    ctx.fillStyle = `rgba(244, 233, 211, ${p.opacity})`;
     ctx.fill();
   }
 }

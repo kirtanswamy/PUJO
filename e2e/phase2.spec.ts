@@ -92,20 +92,17 @@ test.describe('Phase 2: Protima scene', () => {
     // Wait for animation to be applied
     await page.waitForTimeout(500);
 
-    // Check that CSS animations are running on the pupil elements (inner ellipses)
-    const pupilL = eyeL.locator('ellipse[fill="#14122b"]');
-    const pupilR = eyeR.locator('ellipse[fill="#14122b"]');
-
-    const animationsL = await pupilL.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
-    const animationsR = await pupilR.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    // Check that CSS animations are running on the eye groups themselves
+    const animationsL = await eyeL.evaluate((el: SVGGElement) => el.getAnimations().length);
+    const animationsR = await eyeR.evaluate((el: SVGGElement) => el.getAnimations().length);
     expect(animationsL).toBeGreaterThan(0);
     expect(animationsR).toBeGreaterThan(0);
 
     // Check that the animation is the eye-glow animation
-    const animationNameL = await pupilL.evaluate((el: SVGEllipseElement) => 
+    const animationNameL = await eyeL.evaluate((el: SVGGElement) => 
       el.getAnimations().map(a => a.animationName).join(',')
     );
-    const animationNameR = await pupilR.evaluate((el: SVGEllipseElement) => 
+    const animationNameR = await eyeR.evaluate((el: SVGGElement) => 
       el.getAnimations().map(a => a.animationName).join(',')
     );
     expect(animationNameL).toContain('eye-glow');
@@ -114,17 +111,17 @@ test.describe('Phase 2: Protima scene', () => {
     // Wait for right eye's animation delay (3.5s) to pass, then sample
     await page.waitForTimeout(4000);
 
-    // Sample at multiple points to catch the animation
+    // Sample at multiple points over 3s to catch the animation
     const samples = 5;
     const opacitiesL: number[] = [];
     const opacitiesR: number[] = [];
     
     for (let i = 0; i < samples; i++) {
-      const opacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
-      const opacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+      const opacityL = await eyeL.evaluate((el: SVGGElement) => parseFloat(window.getComputedStyle(el).opacity));
+      const opacityR = await eyeR.evaluate((el: SVGGElement) => parseFloat(window.getComputedStyle(el).opacity));
       opacitiesL.push(opacityL);
       opacitiesR.push(opacityR);
-      if (i < samples - 1) await page.waitForTimeout(400);
+      if (i < samples - 1) await page.waitForTimeout(750); // 750ms intervals = 3s total
     }
 
     // At least one sample should differ from the first
@@ -152,17 +149,15 @@ test.describe('Phase 2: Protima scene', () => {
     await expect(eyeL).toBeVisible();
     await expect(eyeR).toBeVisible();
 
-    // Under reduced motion, there should be no animations on pupils
-    const pupilL = eyeL.locator('ellipse[fill="#14122b"]');
-    const pupilR = eyeR.locator('ellipse[fill="#14122b"]');
-    const animationsL = await pupilL.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
-    const animationsR = await pupilR.evaluate((el: SVGEllipseElement) => el.getAnimations().length);
+    // Under reduced motion, there should be no animations on eye groups
+    const animationsL = await eyeL.evaluate((el: SVGGElement) => el.getAnimations().length);
+    const animationsR = await eyeR.evaluate((el: SVGGElement) => el.getAnimations().length);
     expect(animationsL).toBe(0);
     expect(animationsR).toBe(0);
 
     // Eyes should be fully opaque (opacity: 1)
-    const opacityL = await pupilL.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
-    const opacityR = await pupilR.evaluate((el: SVGEllipseElement) => parseFloat(window.getComputedStyle(el).opacity));
+    const opacityL = await eyeL.evaluate((el: SVGGElement) => parseFloat(window.getComputedStyle(el).opacity));
+    const opacityR = await eyeR.evaluate((el: SVGGElement) => parseFloat(window.getComputedStyle(el).opacity));
     expect(opacityL).toBe(1);
     expect(opacityR).toBe(1);
   });
@@ -242,4 +237,68 @@ test.describe('Phase 2: Screenshots', () => {
       });
     }
   }
+});
+
+test.describe('Phase 2: Luminance contrast', () => {
+  test('protima, chalchitra and sky have sufficient luminance contrast', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+    await page.getByRole('button', { name: 'পুজোয় প্রবেশ করুন' }).click();
+    await expect(page.getByTestId('entry-gate')).toBeHidden();
+
+    const svg = page.locator('svg.stage-svg');
+
+    // Get the first painted child of each layer (the g wrappers contain the actual shapes)
+    const sky = svg.locator('#sky > *').first();
+    const chalchitra = svg.locator('#chalchitra > *').first();
+    const protima = svg.locator('#protima > *').first();
+
+    await expect(sky).toBeVisible();
+    await expect(chalchitra).toBeVisible();
+    await expect(protima).toBeVisible();
+
+    // Compute luminance from fill color
+    const skyFill = await sky.evaluate((el: SVGGraphicsElement) => window.getComputedStyle(el).fill);
+    const chalchitraFill = await chalchitra.evaluate((el: SVGGraphicsElement) => window.getComputedStyle(el).fill);
+    const protimaFill = await protima.evaluate((el: SVGGraphicsElement) => window.getComputedStyle(el).fill);
+
+    console.log(`Fill - sky: ${skyFill}, chalchitra: ${chalchitraFill}, protima: ${protimaFill}`);
+
+    // Helper to compute relative luminance from RGB
+    const luminance = (rgb: string) => {
+      const match = rgb.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+      if (!match) return 0;
+      const [_, r, g, b] = match.map(Number);
+      const srgb = [r, g, b].map(v => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+    };
+
+    const skyLum = luminance(skyFill);
+    const chalchitraLum = luminance(chalchitraFill);
+    const protimaLum = luminance(protimaFill);
+
+    console.log(`Luminance - sky: ${skyLum}, chalchitra: ${chalchitraLum}, protima: ${protimaLum}`);
+
+    // Contrast ratio = (L1 + 0.05) / (L2 + 0.05) where L1 > L2
+    const contrast = (l1: number, l2: number) => {
+      const L1 = Math.max(l1, l2);
+      const L2 = Math.min(l1, l2);
+      return (L1 + 0.05) / (L2 + 0.05);
+    };
+
+    const skyChalchitraContrast = contrast(skyLum, chalchitraLum);
+    const skyProtimaContrast = contrast(skyLum, protimaLum);
+    const chalchitraProtimaContrast = contrast(chalchitraLum, protimaLum);
+
+    console.log(`Contrast - sky/chalchitra: ${skyChalchitraContrast.toFixed(2)}, sky/protima: ${skyProtimaContrast.toFixed(2)}, chalchitra/protima: ${chalchitraProtimaContrast.toFixed(2)}`);
+
+    // Require at least 3:1 contrast between each pair
+    expect(skyChalchitraContrast).toBeGreaterThanOrEqual(3);
+    expect(skyProtimaContrast).toBeGreaterThanOrEqual(3);
+    expect(chalchitraProtimaContrast).toBeGreaterThanOrEqual(3);
+  });
 });

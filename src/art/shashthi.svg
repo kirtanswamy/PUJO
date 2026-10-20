@@ -1,40 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000" preserveAspectRatio="xMidYMid meet">
-  <defs>
-    <style>
-      .palette-sky { fill: #14122b; }
-      .palette-structure { fill: #2a1a12; }
-      .palette-chalchitra { fill: #c9973a; }
-      .palette-chalchitra-inner { fill: #1a1528; }
-      .palette-protima { fill: #2a1a12; }
-      .palette-protima-highlight { fill: #3a2a1a; }
-      .palette-eye { fill: #c8321f; }
-      .palette-haldi { fill: #e9a82f; }
-      .palette-lights { fill: #e9a82f; }
-      .palette-lamp { fill: #c9973a; }
-      .palette-lamp-glow { fill: #e9a82f; }
-      .palette-foreground { fill: #2a1a12; }
-      .palette-foreground-highlight { fill: #3a2a1a; }
-      .palette-paper { fill: #f4e9d3; }
-    </style>
-  </defs>
 
   <!-- Sky bleeds to viewport edges - slightly lighter for evening -->
-  <rect id="sky" class="palette-sky" x="-200" y="-100" width="1600" height="600" />
+  <g id="sky">
+    <rect class="palette-sky" x="-200" y="-100" width="1600" height="600" />
+  </g>
 
   <!-- Structure (thakurdalan architecture) -->
   <g id="structure">
     <!-- Left pillar -->
     <rect class="palette-structure" x="150" y="300" width="80" height="500" rx="4" />
-    <rect class="palette-protima-highlight" x="150" y="300" width="8" height="500" rx="4" />
+    <rect class="palette-structure-highlight" x="150" y="300" width="8" height="500" rx="4" />
     <!-- Right pillar -->
     <rect class="palette-structure" x="970" y="300" width="80" height="500" rx="4" />
-    <rect class="palette-protima-highlight" x="1042" y="300" width="8" height="500" rx="4" />
+    <rect class="palette-structure-highlight" x="1042" y="300" width="8" height="500" rx="4" />
     <!-- Top arch with more detail -->
     <path class="palette-structure" d="M150 300 Q600 160 1050 300 L1050 320 Q600 200 150 320 Z" />
-    <path class="palette-protima-highlight" d="M150 320 Q600 180 1050 320" stroke="#3a2a1a" stroke-width="4" fill="none" />
+    <path class="palette-structure-highlight" d="M150 320 Q600 180 1050 320" fill="none" stroke="#c9973a" stroke-width="4" />
     <!-- Base platform -->
     <rect class="palette-structure" x="100" y="780" width="1000" height="40" rx="4" />
-    <rect class="palette-protima-highlight" x="100" y="780" width="1000" height="6" rx="4" />
+    <rect class="palette-structure-highlight" x="100" y="780" width="1000" height="6" rx="4" />
     <!-- Decorative bands -->
     <rect class="palette-chalchitra" x="150" y="350" width="80" height="8" rx="2" />
     <rect class="palette-chalchitra" x="970" y="350" width="80" height="8" rx="2" />
@@ -42,31 +26,31 @@
     <rect class="palette-chalchitra" x="970" y="700" width="80" height="8" rx="2" />
   </g>
 
-  <!-- Chalchitra (backdrop behind protima) - more ornate for shashthi -->
+  <!-- Chalchitra (backdrop behind protima) - more ornate for shashthi - alta/brass tints -->
   <g id="chalchitra">
     <ellipse class="palette-chalchitra" cx="600" cy="480" rx="300" ry="240" />
     <ellipse class="palette-chalchitra-inner" cx="600" cy="460" rx="260" ry="200" />
     <ellipse class="palette-chalchitra" cx="600" cy="440" rx="220" ry="160" />
     <ellipse class="palette-chalchitra-inner" cx="600" cy="430" rx="180" ry="120" />
     <!-- Decorative lotus petals -->
-    <g fill="#e9a82f" opacity="0.3">
+    <g fill="#c8321f" opacity="0.3">
       <ellipse cx="400" cy="500" rx="40" ry="20" transform="rotate(-30 400 500)" />
       <ellipse cx="800" cy="500" rx="40" ry="20" transform="rotate(30 800 500)" />
       <ellipse cx="450" cy="380" rx="30" ry="15" transform="rotate(-45 450 380)" />
       <ellipse cx="750" cy="380" rx="30" ry="15" transform="rotate(45 750 380)" />
     </g>
     <!-- Decorative band -->
-    <ellipse class="palette-haldi" cx="600" cy="480" rx="290" ry="230" fill="none" stroke="#e9a82f" stroke-width="2" opacity="0.3" />
+    <ellipse class="palette-chalchitra" cx="600" cy="480" rx="290" ry="230" fill="none" stroke="#c9973a" stroke-width="2" opacity="0.3" />
   </g>
 
-  <!-- Protima (deity) - face uncovered for bodhon -->
+  <!-- Protima (deity) - face uncovered for bodhon - paper/brass tints -->
   <g id="protima">
     <!-- Torso -->
     <ellipse class="palette-protima" cx="600" cy="580" rx="120" ry="140" />
-    <ellipse class="palette-protima-highlight" cx="550" cy="550" rx="60" ry="70" opacity="0.3" />
+    <ellipse class="palette-protima-shade" cx="550" cy="550" rx="60" ry="70" opacity="0.5" />
     <!-- Head -->
     <ellipse class="palette-protima" cx="600" cy="410" rx="90" ry="100" />
-    <ellipse class="palette-protima-highlight" cx="560" cy="380" rx="40" ry="45" opacity="0.3" />
+    <ellipse class="palette-protima-shade" cx="560" cy="380" rx="40" ry="45" opacity="0.5" />
     <!-- Crown - more elaborate -->
     <path class="palette-chalchitra" d="M510 350 Q540 290 570 310 Q600 280 630 310 Q660 290 690 350 L690 370 Q600 320 510 370 Z" />
     <path class="palette-chalchitra" d="M540 350 Q570 310 600 330 Q630 310 660 350" stroke="#e9a82f" stroke-width="2" fill="none" />
@@ -91,27 +75,34 @@
     <ellipse fill="#14122b" cx="645" cy="400" rx="12" ry="16" />
   </g>
 
-  <!-- String lights - sagging arc along top of structure -->
+  <!-- String lights - sagging catenary swags between anchor points on structure top -->
   <g id="lights">
-    <!-- Left sag -->
-    <ellipse class="palette-lights" cx="250" cy="320" rx="8" ry="8" opacity="0.8" />
-    <ellipse class="palette-lights" cx="300" cy="310" rx="8" ry="8" opacity="0.9" />
-    <ellipse class="palette-lights" cx="350" cy="305" rx="8" ry="8" opacity="1" />
-    <ellipse class="palette-lights" cx="400" cy="302" rx="8" ry="8" opacity="0.9" />
-    <ellipse class="palette-lights" cx="450" cy="300" rx="8" ry="8" opacity="0.8" />
-    <!-- Center peak -->
-    <ellipse class="palette-lights" cx="500" cy="300" rx="10" ry="10" opacity="1" />
-    <ellipse class="palette-lights" cx="550" cy="302" rx="8" ry="8" opacity="0.9" />
-    <ellipse class="palette-lights" cx="600" cy="305" rx="8" ry="8" opacity="1" />
-    <ellipse class="palette-lights" cx="650" cy="308" rx="8" ry="8" opacity="0.9" />
-    <ellipse class="palette-lights" cx="700" cy="310" rx="8" ry="8" opacity="0.8" />
-    <!-- Right sag -->
-    <ellipse class="palette-lights" cx="750" cy="315" rx="8" ry="8" opacity="0.8" />
-    <ellipse class="palette-lights" cx="800" cy="320" rx="8" ry="8" opacity="0.7" />
-    <ellipse class="palette-lights" cx="850" cy="325" rx="8" ry="8" opacity="0.6" />
-    <!-- Additional for shashthi - more lights -->
-    <ellipse class="palette-lights" cx="900" cy="328" rx="8" ry="8" opacity="0.5" />
-    <ellipse class="palette-lights" cx="950" cy="330" rx="8" ry="8" opacity="0.4" />
+    <!-- Anchors at structure top: left pillar (150,300), right pillar (1050,300) -->
+    <!-- 4 swags between anchors at x=150, 375, 600, 825, 1050 -->
+    
+    <!-- Swag 1: between x=150 and x=375 -->
+    <ellipse class="palette-lights" cx="200" cy="335" rx="8" ry="8" opacity="0.8" />
+    <ellipse class="palette-lights" cx="250" cy="340" rx="8" ry="8" opacity="0.9" />
+    <ellipse class="palette-lights" cx="300" cy="342" rx="8" ry="8" opacity="1" />
+    <ellipse class="palette-lights" cx="325" cy="340" rx="8" ry="8" opacity="0.9" />
+    
+    <!-- Swag 2: between x=375 and x=600 -->
+    <ellipse class="palette-lights" cx="425" cy="335" rx="8" ry="8" opacity="0.8" />
+    <ellipse class="palette-lights" cx="475" cy="340" rx="8" ry="8" opacity="0.9" />
+    <ellipse class="palette-lights" cx="525" cy="342" rx="8" ry="8" opacity="1" />
+    <ellipse class="palette-lights" cx="575" cy="340" rx="8" ry="8" opacity="0.9" />
+    
+    <!-- Swag 3: between x=600 and x=825 -->
+    <ellipse class="palette-lights" cx="650" cy="335" rx="8" ry="8" opacity="0.8" />
+    <ellipse class="palette-lights" cx="700" cy="340" rx="8" ry="8" opacity="0.9" />
+    <ellipse class="palette-lights" cx="750" cy="342" rx="8" ry="8" opacity="1" />
+    <ellipse class="palette-lights" cx="775" cy="340" rx="8" ry="8" opacity="0.9" />
+    
+    <!-- Swag 4: between x=825 and x=1050 -->
+    <ellipse class="palette-lights" cx="875" cy="335" rx="8" ry="8" opacity="0.8" />
+    <ellipse class="palette-lights" cx="925" cy="340" rx="8" ry="8" opacity="0.9" />
+    <ellipse class="palette-lights" cx="975" cy="342" rx="8" ry="8" opacity="1" />
+    <ellipse class="palette-lights" cx="1000" cy="340" rx="8" ry="8" opacity="0.9" />
   </g>
 
   <!-- Lamp/Pradip -->
@@ -127,11 +118,11 @@
     <ellipse class="palette-lamp-glow" cx="900" cy="750" rx="15" ry="8" />
   </g>
 
-  <!-- Foreground bleeds to viewport edges -->
+  <!-- Foreground bleeds to viewport edges - lighter than sky -->
   <g id="foreground">
     <rect class="palette-foreground" x="-200" y="850" width="1600" height="250" />
-    <path class="palette-foreground" d="M-200 850 Q300 800 600 850 Q900 800 1200 850 Q1500 800 1600 850 L1600 1100 L-200 1100 Z" fill="#1a1220" />
-    <path class="palette-foreground-highlight" d="M-200 850 Q300 800 600 850 Q900 800 1200 850 Q1500 800 1600 850" fill="none" stroke="#3a2a1a" stroke-width="3" opacity="0.3" />
+    <path class="palette-foreground" d="M-200 850 Q300 800 600 850 Q900 800 1200 850 Q1500 800 1600 850 L1600 1100 L-200 1100 Z" fill="#2a1a12" />
+    <path class="palette-foreground-accent" d="M-200 850 Q300 800 600 850 Q900 800 1200 850 Q1500 800 1600 850" fill="none" stroke="#4a3a2f" stroke-width="3" opacity="0.3" />
     <!-- Alpona pattern hint -->
     <g fill="#e9a82f" opacity="0.15">
       <circle cx="300" cy="900" r="60" />

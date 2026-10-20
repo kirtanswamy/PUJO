@@ -133,15 +133,15 @@ body {
   outline-offset: 3px;
 }
 
-/* Eye glow animation */
+/* Eye glow animation on the eye groups (haldi almond shapes) */
 @keyframes eye-glow {
   0%, 100% {
-    opacity: 0.3;
-    transform: translateX(-0.5px);
+    opacity: 0.35;
+    transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: translateX(0.5px);
+    opacity: 1;
+    transform: scale(1.08);
   }
 }
 
@@ -162,7 +162,7 @@ body {
   .eye-glow {
     animation: none;
     opacity: 1;
-    transform: none;
+    transform: scale(1);
   }
 }
 
@@ -182,3 +182,21 @@ body {
 .eye-open {
   opacity: 1;
 }
+
+/* Palette color classes for SVG rendering via innerHTML */
+.palette-sky { fill: #14122b; }
+.palette-structure { fill: #2a1a12; }
+.palette-structure-highlight { fill: #c9973a; }
+.palette-chalchitra { fill: #c8321f; }
+.palette-chalchitra-inner { fill: #d8523f; }
+.palette-chalchitra-accent { fill: #a02618; }
+.palette-protima { fill: #f4e9d3; }
+.palette-protima-shade { fill: #e8dcc8; }
+.palette-protima-accent { fill: #d8b05a; }
+.palette-eye { fill: #c8321f; }
+.palette-haldi { fill: #e9a82f; }
+.palette-lights { fill: #e9a82f; }
+.palette-lamp { fill: #c9973a; }
+.palette-lamp-glow { fill: #e9a82f; }
+.palette-foreground { fill: #3a2a1f; }
+.palette-foreground-accent { fill: #4a3a2f; }
